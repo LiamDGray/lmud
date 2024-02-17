@@ -3,6 +3,28 @@ GAME_PORT ?= 1203
 REL_ERL_LIBS ?= $(ERL_LIBS):./_build/default/lib
 ERLANG_COOKIE = $(shell grep setcookie _build/default/rel/lmud/releases/0.5.0-dev/vm.args | awk {'print $$2'} | sed s/\'//g)
 
+# Determine the system architecture
+UNAME_M := $(shell uname -m)
+ifeq ($(UNAME_M),aarch64) # ARM architecture
+  ARCH := ARM
+else ifeq ($(UNAME_M),armv6l)
+  ARCH := ARM
+else ifeq ($(UNAME_M),armv7l)
+  ARCH := ARM
+else
+  ARCH := NOT_ARM
+endif
+
+# Add a flag for non-ARM architecture
+QEMU_FLAG := -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static
+
+# Conditional execution command
+ifeq ($(ARCH),ARM)
+  ARCH_FLAG := 
+else
+  ARCH_FLAG := $(QEMU_FLAG)
+endif
+
 default: build
 
 build:
@@ -50,7 +72,9 @@ docker-run:
 		-p 1203:1203 \
 		--name lmud \
 		--mount type=bind,source=`pwd`/game-data,target=/lmud/_build/default/rel/data \
+		$(ARCH_FLAG) \
 		lfex/lmud
+
 
 docker-bash:
 	@docker exec -it lmud bash
