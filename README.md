@@ -39,9 +39,7 @@ If you just want to check out the lmud server, you can do so with the following:
 
 Note: The docker image lfex/lmud is for armv8.  If your host system isn't that, you may need to use QEMU. E.g. on Ubuntu on amd64:
 
-sudo apt install qemu
-sudo apt-get install qemu-system-arm
-sudo apt-get install qemu-system-arm qemu-efi
+sudo apt-get install qemu qemu-system-arm qemu-efi
 
 This will use the published docker image with a game-data volume.
 
